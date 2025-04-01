@@ -10,6 +10,7 @@ boolean ladybugOn;
 boolean eraserOn;
 boolean savebuttonOn;
 boolean loadbuttonOn;
+int paletteHeight;
 
 //pallette of colours
 color pink = #EF476F;
@@ -23,6 +24,7 @@ color black = #000000;
 
 float sliderY;
 float thickness;
+float ladybugSize;
 
 //variable for colour selection
 color currentColor;
@@ -41,6 +43,8 @@ void setup () {
   currentColor = color(black);
   sliderY = 100;
   thickness = 5;
+  paletteHeight = 200;
+  ladybugSize = 100;
 }
 
 void draw () {
@@ -48,7 +52,7 @@ void draw () {
   stroke (0);
   strokeWeight (1);
   fill (100);
-  rect (0, 0, 800, 200);
+  rect (0, 0, 800, paletteHeight);
 
   //indicator
   stroke (black);
@@ -57,6 +61,7 @@ void draw () {
 
   fill (255);
   thickness = map(sliderY, 50, 150, 0, 20);
+  ladybugSize = map(sliderY, 50, 150, 0, 100);
   line (600, 50, 600, 150);
   circle (600, sliderY, 50);
 
@@ -115,8 +120,18 @@ void draw () {
   image (loadbutton, 750, 50, 50, 50);
 
   //indicator
+  textSize (30);
+  textAlign (CENTER, CENTER);
+  text (thickness, 750, 160);
   stroke (thickness);
   fill (currentColor);
+
+ if (mouseY < paletteHeight) {
+    noFill ();
+    noStroke ();
+    ellipse(mouseX, mouseY, 50, 50);
+  }
+  
 }
 
 void mouseDragged () {
@@ -125,13 +140,17 @@ void mouseDragged () {
     //eraserOn = false;
     strokeWeight (thickness);
     stroke (currentColor);
-    line (pmouseX, pmouseY, mouseX, mouseY);
+    if (mouseY > 200) {
+      line (pmouseX, pmouseY, mouseX, mouseY);
+    }
   } else {
     // ladybug drawing
-    image (ladybug, mouseX, mouseY, 100, 100);
+    if (mouseY > 200) {
+      image (ladybug, mouseX, mouseY, ladybugSize, ladybugSize);
+    }
   }
 
-  if (eraserOn == true) {
+  if (eraserOn == true && mouseY > 200) {
     // erasing job
     stroke (white);
     strokeWeight (thickness*2);
@@ -143,6 +162,11 @@ void mouseDragged () {
 }
 
 void mouseReleased () {
+  if (mouseY < paletteHeight) {
+    ladybugOn = false;
+    eraserOn = false;
+  }
+    
   // ladybug button
   if (mouseX > 0 && mouseX < 100 && mouseY > 0 && mouseY < 100) {
     ladybugOn = !ladybugOn;
